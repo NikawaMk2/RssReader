@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string
+        name="input_group"
+        >グループ名を入力してください</string>
+    <string
+        name="input_rss_feed_url"
+        >RSSフィードURLを入力してください</string>
+    <string
+        name="input_new_group"
+        >新しいグループ名を入力してください</string>
+    <string
+        name="group_name_empty"
+        >グループ名が入力されていません</string>
+    <string
+        name="rss_feed_url_empty"
+        >RSSフィードURLが入力されていません</string>
+    <string
+        name="delete_group_confirm"
+        >グループを削除します</string>
+    <string
+        name="delete_rss_feed_confirm"
+        >RSSフィードを削除します</string>
+</resources>
