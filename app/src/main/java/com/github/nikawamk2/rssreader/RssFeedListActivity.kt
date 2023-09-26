@@ -9,20 +9,27 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.fragment.app.FragmentManager
+import com.github.nikawamk2.rssreader.rss.Rss
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import org.mcsoxford.rss.RSSReaderException
 import java.util.UUID
 
-class RssFeedListActivity(private val groupId: String) : AppCompatActivity() {
+
+class RssFeedListActivity : AppCompatActivity() {
     private lateinit var feedList: ArrayList<RssFeedInfo>
     private lateinit var adapter: RssFeedAdapter
+    private lateinit var groupId: String
 
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_rss_feed_group_list)
+        setContentView(R.layout.activity_rss_feed_list)
 
-        feedList = ArrayList()
-        val list = findViewById<ListView>(R.id.rss_feed_group_list)
+        groupId = intent.getStringExtra(RssFeedGroupMenuDialogFragment.ExtendData.GroupID).toString()
+
+        val dm = DataManager(this)
+        feedList = dm.getRssFeed(groupId)
+        val list = findViewById<ListView>(R.id.rss_feed_list)
 
         adapter = RssFeedAdapter(
             this,
@@ -78,16 +85,19 @@ class RssFeedListActivity(private val groupId: String) : AppCompatActivity() {
             return resources.getString(R.string.rss_feed_url_empty)
         }
 
-        //TODO:RSSフィードURLのチェック処理作る
         try {
+            val rss = Rss(rssFeedUrl)
+            val feed = rss.getRssFeed() ?: throw RSSReaderException(0, "")
+
             val feedId = UUID.randomUUID().toString()
             val dm = DataManager(this)
-            //TODO:RSSフィード名をサイト名にしたい
-            val rssFeedName = "test"
+            val rssFeedName = feed.title
             dm.addRssFeed(feedId, groupId, rssFeedUrl, rssFeedName)
 
             val newGroup = RssFeedInfo(feedList.count().toLong(), feedId, rssFeedUrl, rssFeedName)
             feedList.add(newGroup)
+        } catch (e: RSSReaderException) {
+            return resources.getString(R.string.rss_feed_url_not_correct)
         } catch (e: Exception) {
             return e.toString()
         }

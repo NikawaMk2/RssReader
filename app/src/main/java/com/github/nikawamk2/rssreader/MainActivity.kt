@@ -12,6 +12,7 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.LinearLayout
+import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.FragmentManager
 import com.github.nikawamk2.rssreader.databinding.ActivityMainBinding
@@ -34,31 +35,51 @@ class MainActivity : AppCompatActivity() {
 
         setSupportActionBar(binding.toolbar)
 
-        // TabLayoutの生成
         tabLayout.also {
             val dm = DataManager(this)
             val groupList = dm.getRssFeedGroup()
             for (group in groupList) {
                 val tab = it.newTab()
+                tab.tag = group.groupId
                 tab.text = group.groupName
                 it.addTab(tab)
             }
         }
+
+        // TODO 記事一覧の設定とイベントハンドラを書く
     }
 
     override fun onResume() {
         super.onResume()
+        val dm = DataManager(this)
+        val groupList = dm.getRssFeedGroup()
 
+        val tabList = ArrayList<TabLayout.Tab>()
+        for (i in 0..< tabLayout.tabCount) {
+            val tab = tabLayout.getTabAt(i) ?: continue
+
+            // タブ削除
+            if (!groupList.any{ it.groupId == tab.tag }) {
+                tabLayout.removeTabAt(i)
+            }
+
+            tabList.add(tab)
+        }
+
+        // タブ追加
+        val newGroupList = groupList.filter { group ->
+            !tabList.any{ it.tag == group.groupId }
+        }
         tabLayout.also {
-            val dm = DataManager(this)
-            val groupList = dm.getRssFeedGroup()
-            for(group in groupList) {
+            for (newGroup in newGroupList) {
                 val tab = it.newTab()
-                tab.text = group.groupName
+                tab.tag = newGroup.groupId
+                tab.text = newGroup.groupName
                 it.addTab(tab)
             }
         }
     }
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
         return true

@@ -21,7 +21,8 @@ class RssFeedGroupListActivity : AppCompatActivity()  {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_rss_feed_group_list)
 
-        groupList = ArrayList()
+        val dm = DataManager(this)
+        groupList = dm.getRssFeedGroup()
         val list = findViewById<ListView>(R.id.rss_feed_group_list)
 
         adapter = RssFeedGroupAdapter(

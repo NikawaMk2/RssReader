@@ -16,6 +16,10 @@ class RssFeedGroupMenuDialogFragment (private val groupList: RssFeedGroupListAct
         const val EditGroupName = 1
         const val Delete = 2
     }
+    object ExtendData {
+        const val GroupID = "Intent_GroupID"
+    }
+
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return activity?.let {
             val builder = AlertDialog.Builder(it)
@@ -33,6 +37,7 @@ class RssFeedGroupMenuDialogFragment (private val groupList: RssFeedGroupListAct
 
     private fun transitionToRssFeedList() {
         val intent = Intent(groupList, RssFeedListActivity::class.java)
+        intent.putExtra(ExtendData.GroupID, groupId)
         startActivity(intent)
     }
 

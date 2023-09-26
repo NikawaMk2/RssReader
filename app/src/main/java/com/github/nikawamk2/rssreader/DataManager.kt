@@ -46,7 +46,18 @@ class DataManager(context: Context) {
         val db = dbHelper.readableDatabase
 
         val groupList = ArrayList<RssFeedGroupInfo>()
-        val cursor = db.rawQuery(getRssFeedGroupSql(), null)
+
+        val projection = arrayOf(RssFeedGroup.Column_Id, RssFeedGroup.Column_GroupName)
+
+        val cursor = db.query(
+            RssFeedGroup.TableName,
+            projection,
+            null,
+            null,
+            null,
+            null,
+            null
+        )
         if (cursor.count == 0) {
             return groupList;
         }
@@ -58,23 +69,6 @@ class DataManager(context: Context) {
             groupList.add(groupInfo)
             cursor.moveToNext()
             listIndex++
-        }
-        return groupList;
-    }
-
-    fun getRssFeedGroupId(): ArrayList<String> {
-        val db = dbHelper.readableDatabase
-
-        val groupList = ArrayList<String>()
-        val cursor = db.rawQuery(getRssFeedGroupSql(), null)
-        if (cursor.count == 0) {
-            return groupList;
-        }
-
-        cursor.moveToFirst()
-        while (!cursor.isAfterLast) {
-            groupList.add(cursor.getString(0))
-            cursor.moveToNext()
         }
         return groupList;
     }
@@ -100,13 +94,42 @@ class DataManager(context: Context) {
         db.delete(RssFeed.TableName, selection, selectionArgs)
     }
 
-    private fun getRssFeedGroupSql(): String {
-        val sql = StringBuilder()
-        sql.append(" SELECT")
-        sql.append("    ${RssFeedGroup.Column_Id},")
-        sql.append("    ${RssFeedGroup.Column_GroupName}")
-        sql.append(" FROM ${RssFeedGroup.TableName}")
+    fun getRssFeed(groupId: String): ArrayList<RssFeedInfo> {
+        val db = dbHelper.readableDatabase
 
-        return sql.toString()
+        val feedList = ArrayList<RssFeedInfo>()
+
+        val projection = arrayOf(RssFeed.Column_Id, RssFeed.Column_Url, RssFeed.Column_FeedName)
+
+        val selection = "${RssFeed.Column_GroupId} = ?"
+        val selectionArgs = arrayOf(groupId)
+
+        val cursor = db.query(
+            RssFeed.TableName,
+            projection,
+            selection,
+            selectionArgs,
+            null,
+            null,
+            null
+        )
+        if (cursor.count == 0) {
+            return feedList;
+        }
+
+        var listIndex: Long = 0
+        cursor.moveToFirst()
+        while (!cursor.isAfterLast) {
+            val groupInfo = RssFeedInfo(
+                listIndex,
+                cursor.getString(0),
+                cursor.getString(1),
+                cursor.getString(2)
+            )
+            feedList.add(groupInfo)
+            cursor.moveToNext()
+            listIndex++
+        }
+        return feedList;
     }
 }

@@ -21,4 +21,7 @@
     <string
         name="delete_rss_feed_confirm"
         >RSSフィードを削除します</string>
+    <string
+        name="rss_feed_url_not_correct"
+        >RSSフィードURLが正しくありません</string>
 </resources>

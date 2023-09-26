@@ -9,4 +9,7 @@
     <string
         name="group_list"
         >グループ一覧</string>
+    <string
+        name="rss_feed_list"
+        >RSSフィード一覧</string>
 </resources>
