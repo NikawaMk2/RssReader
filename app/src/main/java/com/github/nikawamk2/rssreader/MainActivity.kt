@@ -1,7 +1,10 @@
 package com.github.nikawamk2.rssreader
 
+import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.LayoutInflater
 import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
@@ -11,10 +14,13 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.LinearLayout
+import android.widget.ListView
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.FragmentManager
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.github.nikawamk2.rssreader.databinding.ActivityMainBinding
 import com.github.nikawamk2.rssreader.db.RssReaderDBHelper
 import com.google.android.material.tabs.TabLayout
@@ -24,6 +30,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var tabLayout: TabLayout
 
+    @SuppressLint("ResourceType")
     override fun onCreate(savedInstanceState: Bundle?) {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         super.onCreate(savedInstanceState)
@@ -45,8 +52,6 @@ class MainActivity : AppCompatActivity() {
                 it.addTab(tab)
             }
         }
-
-        // TODO 記事一覧の設定とイベントハンドラを書く
     }
 
     override fun onResume() {
@@ -92,12 +97,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         return true
-    }
-
-    fun addTab(tabName: String) {
-        val tab = tabLayout.newTab()
-        tab.text = tabName
-        tabLayout.addTab(tab)
     }
 
     private fun transitionToSettings() {

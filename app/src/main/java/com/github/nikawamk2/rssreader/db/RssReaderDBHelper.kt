@@ -3,6 +3,7 @@ package com.github.nikawamk2.rssreader.db
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import com.github.nikawamk2.rssreader.db.table.Article
 import com.github.nikawamk2.rssreader.db.table.RssFeed
 import com.github.nikawamk2.rssreader.db.table.RssFeedGroup
 
@@ -10,6 +11,7 @@ class RssReaderDBHelper(context: Context): SQLiteOpenHelper(context, DATABASE_NA
     override fun onCreate(db: SQLiteDatabase) {
         db.execSQL(RssFeedGroup.getCreateTableSql())
         db.execSQL(RssFeed.getCreateTableSql())
+        db.execSQL(Article.getCreateTableSql())
     }
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
     }

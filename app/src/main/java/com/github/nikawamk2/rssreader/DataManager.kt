@@ -3,6 +3,7 @@ package com.github.nikawamk2.rssreader
 import android.content.ContentValues
 import android.content.Context
 import com.github.nikawamk2.rssreader.db.RssReaderDBHelper
+import com.github.nikawamk2.rssreader.db.table.Article
 import com.github.nikawamk2.rssreader.db.table.RssFeed
 import com.github.nikawamk2.rssreader.db.table.RssFeedGroup
 import java.lang.StringBuilder
@@ -131,5 +132,49 @@ class DataManager(context: Context) {
             listIndex++
         }
         return feedList;
+    }
+
+    fun getArticle(groupId: String): ArrayList<ArticleInfo> {
+        val db = dbHelper.readableDatabase
+
+        val articleList = ArrayList<ArticleInfo>()
+
+        val cursor = db.rawQuery(getArticleSql(groupId), null, null)
+        if (cursor.count == 0) {
+            return articleList;
+        }
+
+        var listIndex: Long = 0
+        cursor.moveToFirst()
+        while (!cursor.isAfterLast) {
+            val articleInfo = ArticleInfo(
+                listIndex,
+                cursor.getString(0),
+                cursor.getString(1),
+                cursor.getString(2)
+            )
+            articleList.add(articleInfo)
+            cursor.moveToNext()
+            listIndex++
+        }
+        return articleList;
+    }
+
+    private fun getArticleSql(groupId: String): String {
+        val sql = StringBuilder()
+        sql.append(" SELECT")
+        sql.append("     AR.${Article.Column_Id},")
+        sql.append("     AR.${Article.Column_Url},")
+        sql.append("     AR.${Article.Column_ArticleName}")
+        sql.append(" FROM")
+        sql.append("     ${Article.TableName} AR")
+        sql.append(" INNER JOIN ${RssFeed.TableName} RF")
+        sql.append("     ON AR.${Article.Column_RssFeedId} = RF.${RssFeed.Column_Id}")
+        sql.append(" INNER JOIN ${RssFeedGroup.TableName} RG")
+        sql.append("     ON RF.${RssFeed.Column_GroupId} = RG.${RssFeedGroup.Column_Id}")
+        sql.append(" WHERE")
+        sql.append("     RF.ID = '$groupId'")
+
+        return sql.toString()
     }
 }
