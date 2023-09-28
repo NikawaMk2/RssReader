@@ -2,6 +2,7 @@ package com.github.nikawamk2.rssreader
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.view.MenuItem
 import android.widget.ListView
 import android.widget.TextView
 import android.widget.Toast
@@ -24,6 +25,9 @@ class RssFeedListActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_rss_feed_list)
+
+        setSupportActionBar(findViewById(R.id.rss_feed_list_toolbar))
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         groupId = intent.getStringExtra(RssFeedGroupMenuDialogFragment.ExtendData.GroupID).toString()
 
@@ -68,6 +72,13 @@ class RssFeedListActivity : AppCompatActivity() {
         }
     }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == android.R.id.home) {
+            finish()
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
     fun deleteRssFeedRow(position: Int) {
         feedList.removeAt(position)
 
@@ -77,7 +88,7 @@ class RssFeedListActivity : AppCompatActivity() {
             feedList[i] = newFeed
         }
 
-        adapter.notifyDataSetChanged();
+        adapter.notifyDataSetChanged()
     }
 
     private fun addRssFeed(rssFeedUrl: String): String {

@@ -2,12 +2,12 @@ package com.github.nikawamk2.rssreader
 
 import android.content.ContentValues
 import android.content.Context
+import android.text.TextUtils
 import com.github.nikawamk2.rssreader.db.RssReaderDBHelper
 import com.github.nikawamk2.rssreader.db.table.Article
 import com.github.nikawamk2.rssreader.db.table.RssFeed
 import com.github.nikawamk2.rssreader.db.table.RssFeedGroup
-import java.lang.StringBuilder
-import java.util.UUID
+import kotlin.text.StringBuilder
 
 class DataManager(context: Context) {
     private val dbHelper: RssReaderDBHelper = RssReaderDBHelper(context)
@@ -134,6 +134,35 @@ class DataManager(context: Context) {
         return feedList;
     }
 
+    fun refreshArticle(groupId: String, articleList: ArrayList<ArticleInfo>) {
+        if (articleList.isEmpty()) {
+            return
+        }
+
+        val db = dbHelper.writableDatabase
+
+        val currentArticle = getArticle(groupId)
+        if (currentArticle.isNotEmpty()) {
+            val bindList = ArrayList<String>()
+            for (i in 0 ..< currentArticle.count()) {
+                bindList.add("?")
+            }
+            val selection = "${Article.Column_Id} IN (${TextUtils.join(",", bindList)})"
+            val selectionArgs = currentArticle.map{ it.articleId }.toTypedArray()
+            db.delete(Article.TableName, selection, selectionArgs)
+        }
+
+        for (article in articleList) {
+            val values = ContentValues()
+            values.put(Article.Column_RssFeedId, article.rssFeedId)
+            values.put(Article.Column_Id, article.articleId)
+            values.put(Article.Column_Url, article.articleUrl)
+            values.put(Article.Column_ArticleName, article.articleName)
+
+            db.insert(Article.TableName, null, values)
+        }
+    }
+
     fun getArticle(groupId: String): ArrayList<ArticleInfo> {
         val db = dbHelper.readableDatabase
 
@@ -151,7 +180,8 @@ class DataManager(context: Context) {
                 listIndex,
                 cursor.getString(0),
                 cursor.getString(1),
-                cursor.getString(2)
+                cursor.getString(2),
+                cursor.getString(3)
             )
             articleList.add(articleInfo)
             cursor.moveToNext()
@@ -163,6 +193,7 @@ class DataManager(context: Context) {
     private fun getArticleSql(groupId: String): String {
         val sql = StringBuilder()
         sql.append(" SELECT")
+        sql.append("     AR.${Article.Column_RssFeedId},")
         sql.append("     AR.${Article.Column_Id},")
         sql.append("     AR.${Article.Column_Url},")
         sql.append("     AR.${Article.Column_ArticleName}")
@@ -173,7 +204,7 @@ class DataManager(context: Context) {
         sql.append(" INNER JOIN ${RssFeedGroup.TableName} RG")
         sql.append("     ON RF.${RssFeed.Column_GroupId} = RG.${RssFeedGroup.Column_Id}")
         sql.append(" WHERE")
-        sql.append("     RF.ID = '$groupId'")
+        sql.append("     RG.${RssFeedGroup.Column_Id} = '$groupId'")
 
         return sql.toString()
     }

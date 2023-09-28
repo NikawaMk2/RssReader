@@ -1,6 +1,7 @@
 package com.github.nikawamk2.rssreader
 
 import android.os.Bundle
+import android.view.MenuItem
 import android.widget.ListView
 import android.widget.TextView
 import android.widget.Toast
@@ -20,6 +21,9 @@ class RssFeedGroupListActivity : AppCompatActivity()  {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_rss_feed_group_list)
+
+        setSupportActionBar(findViewById(R.id.rss_feed_group_list_toolbar))
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         val dm = DataManager(this)
         groupList = dm.getRssFeedGroup()
@@ -60,6 +64,13 @@ class RssFeedGroupListActivity : AppCompatActivity()  {
                 }
                 .show()
         }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == android.R.id.home) {
+            finish()
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     fun updateGroupName(position: Int, newGroupName: String) {

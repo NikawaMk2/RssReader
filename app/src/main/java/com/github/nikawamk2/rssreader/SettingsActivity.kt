@@ -3,6 +3,7 @@ package com.github.nikawamk2.rssreader
 import android.content.Intent
 import android.os.Bundle
 import android.os.PersistableBundle
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.Preference
 import androidx.preference.PreferenceDataStore
@@ -13,8 +14,19 @@ class SettingsActivity : AppCompatActivity(),
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
+
+        setSupportActionBar(findViewById(R.id.setting_toolbar))
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, SettingsFragment()).commit()
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == android.R.id.home) {
+            finish()
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onPreferenceStartFragment(caller: PreferenceFragmentCompat, pref: Preference): Boolean {

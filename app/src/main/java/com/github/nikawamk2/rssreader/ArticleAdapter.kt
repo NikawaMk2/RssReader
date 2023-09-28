@@ -34,6 +34,7 @@ class ArticleAdapter(private val context: Context, private val articleList: Arra
         }
 
         currentView.findViewById<TextView>(R.id.article_id).text = item.articleId
+        currentView.findViewById<TextView>(R.id.article_url).text = item.articleUrl
         currentView.findViewById<TextView>(R.id.article_name).text = item.articleName
 
         return currentView
