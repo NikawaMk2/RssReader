@@ -6,6 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.TextView
+import com.github.nikawamk2.rssreader.models.ArticleInfo
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 class ArticleAdapter(private val context: Context, private val articleList: ArrayList<ArticleInfo>) : BaseAdapter() {
     private val inflater: LayoutInflater = LayoutInflater.from(context)
@@ -36,6 +39,11 @@ class ArticleAdapter(private val context: Context, private val articleList: Arra
         currentView.findViewById<TextView>(R.id.article_id).text = item.articleId
         currentView.findViewById<TextView>(R.id.article_url).text = item.articleUrl
         currentView.findViewById<TextView>(R.id.article_name).text = item.articleName
+        if (item.articleDate != LocalDateTime.MIN) {
+            currentView.findViewById<TextView>(R.id.article_date).text = item.articleDate.format(
+                DateTimeFormatter.ofPattern("yyyy/MM/dd  HH:mm:ss"))
+        }
+        currentView.findViewById<TextView>(R.id.site_name).text = item.feedName
 
         return currentView
     }

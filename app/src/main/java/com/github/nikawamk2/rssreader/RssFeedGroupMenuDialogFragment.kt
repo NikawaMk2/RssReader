@@ -35,12 +35,18 @@ class RssFeedGroupMenuDialogFragment (private val groupList: RssFeedGroupListAct
         } ?: throw IllegalStateException("Activity cannot be null")
     }
 
+    /**
+     * RSSフィード一覧画面に遷移
+     */
     private fun transitionToRssFeedList() {
         val intent = Intent(groupList, RssFeedListActivity::class.java)
         intent.putExtra(ExtendData.GroupID, groupId)
         startActivity(intent)
     }
 
+    /**
+     * グループ名編集ダイアログを表示
+     */
     private fun showEditGroupNameDialog() {
         val groupName = AppCompatEditText(groupList)
         AlertDialog.Builder(groupList)
@@ -59,6 +65,9 @@ class RssFeedGroupMenuDialogFragment (private val groupList: RssFeedGroupListAct
             .show()
     }
 
+    /**
+     * グループ削除を確認するダイアログを表示
+     */
     private fun showDeleteGroupDialog() {
         AlertDialog.Builder(groupList)
             .setMessage(R.string.delete_group_confirm)
@@ -74,13 +83,19 @@ class RssFeedGroupMenuDialogFragment (private val groupList: RssFeedGroupListAct
             .show()
     }
 
+    /**
+     * グループ名を更新
+     *
+     * @args groupName グループ名
+     * @return エラーメッセージ
+     */
     private fun updateGroupName(groupName: String): String {
         if (groupName == "") {
             return resources.getString(R.string.group_name_empty)
         }
 
         try {
-            var dm = DataManager(groupList)
+            val dm = DataManager(groupList)
             dm.updateRssFeedGroupName(groupId, groupName)
             groupList.updateGroupName(position, groupName)
         } catch (e: Exception) {
@@ -90,9 +105,14 @@ class RssFeedGroupMenuDialogFragment (private val groupList: RssFeedGroupListAct
         return ""
     }
 
+    /**
+     * グループを削除
+     *
+     * @return エラーメッセージ
+     */
     private fun deleteGroup(): String {
         try {
-            var dm = DataManager(groupList)
+            val dm = DataManager(groupList)
             dm.deleteRssFeedGroup(groupId)
             groupList.deleteGroupRow(position)
         } catch (e: Exception) {

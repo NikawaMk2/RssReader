@@ -7,11 +7,23 @@ import com.github.nikawamk2.rssreader.db.RssReaderDBHelper
 import com.github.nikawamk2.rssreader.db.table.Article
 import com.github.nikawamk2.rssreader.db.table.RssFeed
 import com.github.nikawamk2.rssreader.db.table.RssFeedGroup
+import com.github.nikawamk2.rssreader.models.ArticleInfo
+import com.github.nikawamk2.rssreader.models.RssFeedGroupInfo
+import com.github.nikawamk2.rssreader.models.RssFeedInfo
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import kotlin.text.StringBuilder
 
 class DataManager(context: Context) {
     private val dbHelper: RssReaderDBHelper = RssReaderDBHelper(context)
 
+    /**
+     * RSSフィードグループ名を更新
+     *
+     * @args groupId グループID
+     * @args groupName グループ名
+     */
     fun updateRssFeedGroupName(groupId: String, groupName: String) {
         val db = dbHelper.writableDatabase
 
@@ -24,6 +36,12 @@ class DataManager(context: Context) {
         db.update(RssFeedGroup.TableName, values, whereClauses, whereArgs)
     }
 
+    /**
+     * RSSフィードグループを追加
+     *
+     * @args groupId グループID
+     * @args groupName グループ名
+     */
     fun addRssFeedGroup(groupId: String, groupName: String) {
         val db = dbHelper.writableDatabase
 
@@ -34,6 +52,11 @@ class DataManager(context: Context) {
         db.insert(RssFeedGroup.TableName, null, values)
     }
 
+    /**
+     * RSSフィードグループを削除
+     *
+     * @args groupId グループID
+     */
     fun deleteRssFeedGroup(groupId: String) {
         val db = dbHelper.writableDatabase
 
@@ -43,6 +66,11 @@ class DataManager(context: Context) {
         db.delete(RssFeedGroup.TableName, selection, selectionArgs)
     }
 
+    /**
+     * RSSフィードグループ一覧を取得
+     *
+     * @return RSSフィードグループ一覧
+     */
     fun getRssFeedGroup(): ArrayList<RssFeedGroupInfo> {
         val db = dbHelper.readableDatabase
 
@@ -74,6 +102,14 @@ class DataManager(context: Context) {
         return groupList;
     }
 
+    /**
+     * RSSフィードを追加
+     *
+     * @args feedId フィードID
+     * @args groupId グループID
+     * @args rssFeedUrl RSSフィードURL
+     * @args rssFeedName RSSフィード名
+     */
     fun addRssFeed(feedId: String, groupId: String, rssFeedUrl: String, rssFeedName: String) {
         val db = dbHelper.writableDatabase
 
@@ -86,6 +122,11 @@ class DataManager(context: Context) {
         db.insert(RssFeed.TableName, null, values)
     }
 
+    /**
+     * RSSフィードを削除
+     *
+     * @args feedId RSSフィードID
+     */
     fun deleteRssFeed(feedId: String) {
         val db = dbHelper.writableDatabase
 
@@ -95,6 +136,12 @@ class DataManager(context: Context) {
         db.delete(RssFeed.TableName, selection, selectionArgs)
     }
 
+    /**
+     * RSSフィードを取得
+     *
+     * @args groupId グループID
+     * @return RSSフィード一覧
+     */
     fun getRssFeed(groupId: String): ArrayList<RssFeedInfo> {
         val db = dbHelper.readableDatabase
 
@@ -134,6 +181,12 @@ class DataManager(context: Context) {
         return feedList;
     }
 
+    /**
+     * グループIDに紐づく記事を洗い変えする
+     *
+     * @args groupId グループID
+     * @args articleList 登録対象の記事一覧
+     */
     fun refreshArticle(groupId: String, articleList: ArrayList<ArticleInfo>) {
         if (articleList.isEmpty()) {
             return
@@ -158,11 +211,18 @@ class DataManager(context: Context) {
             values.put(Article.Column_Id, article.articleId)
             values.put(Article.Column_Url, article.articleUrl)
             values.put(Article.Column_ArticleName, article.articleName)
+            values.put(Article.Column_ArticleDate, article.getArticleDateForDb())
 
             db.insert(Article.TableName, null, values)
         }
     }
 
+    /**
+     * 記事一覧を取得
+     *
+     * @args groupId グループID
+     * @return 記事一覧
+     */
     fun getArticle(groupId: String): ArrayList<ArticleInfo> {
         val db = dbHelper.readableDatabase
 
@@ -173,15 +233,23 @@ class DataManager(context: Context) {
             return articleList;
         }
 
+        val format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
         var listIndex: Long = 0
         cursor.moveToFirst()
         while (!cursor.isAfterLast) {
+            val articleDateStr = cursor.getString(5)
+            var articleDate = LocalDateTime.MIN
+            if (articleDateStr != "") {
+                articleDate = LocalDateTime.parse(cursor.getString(5), format)
+            }
             val articleInfo = ArticleInfo(
                 listIndex,
                 cursor.getString(0),
                 cursor.getString(1),
                 cursor.getString(2),
-                cursor.getString(3)
+                cursor.getString(3),
+                cursor.getString(4),
+                articleDate
             )
             articleList.add(articleInfo)
             cursor.moveToNext()
@@ -190,13 +258,20 @@ class DataManager(context: Context) {
         return articleList;
     }
 
+    /**
+     * 記事を取得するSQL
+     *
+     * @args groupId グループID
+     */
     private fun getArticleSql(groupId: String): String {
         val sql = StringBuilder()
         sql.append(" SELECT")
         sql.append("     AR.${Article.Column_RssFeedId},")
         sql.append("     AR.${Article.Column_Id},")
         sql.append("     AR.${Article.Column_Url},")
-        sql.append("     AR.${Article.Column_ArticleName}")
+        sql.append("     AR.${Article.Column_ArticleName},")
+        sql.append("     RF.${RssFeed.Column_FeedName},")
+        sql.append("     AR.${Article.Column_ArticleDate}")
         sql.append(" FROM")
         sql.append("     ${Article.TableName} AR")
         sql.append(" INNER JOIN ${RssFeed.TableName} RF")

@@ -24,11 +24,14 @@ class RssFeedManuDialogFragment (private val rssFeedList: RssFeedListActivity, p
         } ?: throw IllegalStateException("Activity cannot be null")
     }
 
+    /**
+     * RSSフィード一覧画面に遷移
+     */
     private fun showDeleteRssFeedDialog() {
         AlertDialog.Builder(rssFeedList)
             .setMessage(R.string.delete_rss_feed_confirm)
             .setPositiveButton(R.string.delete) { _, _ ->
-                var errMsg = deleteRssFeed()
+                val errMsg = deleteRssFeed()
                 if (errMsg != "") {
                     Toast.makeText(rssFeedList, errMsg, Toast.LENGTH_SHORT).show()
                 }
@@ -39,9 +42,13 @@ class RssFeedManuDialogFragment (private val rssFeedList: RssFeedListActivity, p
             .show()
     }
 
+    /**
+     * RSSフィードを削除
+     *
+     */
     private fun deleteRssFeed(): String {
         try {
-            var dm = DataManager(rssFeedList)
+            val dm = DataManager(rssFeedList)
             dm.deleteRssFeed(feedId)
             rssFeedList.deleteRssFeedRow(position)
         } catch (e: Exception) {

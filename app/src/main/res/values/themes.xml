@@ -14,15 +14,15 @@
     </style>
 
     <style name="Widget.MaterialComponents.Toolbar.Primary">
-        <item name="android:background">#8BC34A</item>
-        <item name="titleTextColor">#FFFFFF</item>
-        <item name="subtitleTextColor">#FFFFFF</item>
-        <item name="navigationIconTint">#FFFFFF</item>
+        <item name="android:background">@color/toolbar_back_ground_default</item>
+        <item name="titleTextColor">@color/toolbar_default</item>
+        <item name="subtitleTextColor">@color/toolbar_default</item>
+        <item name="navigationIconTint">@color/toolbar_default</item>
     </style>
 
     <style name="AppToolbarOverflowButton">
         <item name="android:src">@drawable/abc_ic_menu_overflow_material</item>
-        <item name="android:tint">#FFFFFF</item>
+        <item name="android:tint">@color/toolbar_default</item>
         <item name="android:background">?android:attr/selectableItemBackgroundBorderless</item>
         <item name="android:paddingEnd">10dp</item>
     </style>

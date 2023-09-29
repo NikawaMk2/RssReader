@@ -10,6 +10,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.fragment.app.FragmentManager
+import com.github.nikawamk2.rssreader.models.RssFeedInfo
 import com.github.nikawamk2.rssreader.rss.Rss
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import org.mcsoxford.rss.RSSReaderException
@@ -79,6 +80,11 @@ class RssFeedListActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
+    /**
+     * RSSフィードをの行を削除
+     *
+     * @args position 削除対象の行番号
+     */
     fun deleteRssFeedRow(position: Int) {
         feedList.removeAt(position)
 
@@ -91,6 +97,12 @@ class RssFeedListActivity : AppCompatActivity() {
         adapter.notifyDataSetChanged()
     }
 
+    /**
+     * RSSフィードを追加
+     *
+     * @args rssFeedUrl 追加するRSSフィードURL
+     * @return エラーメッセージ
+     */
     private fun addRssFeed(rssFeedUrl: String): String {
         if (rssFeedUrl == "") {
             return resources.getString(R.string.rss_feed_url_empty)

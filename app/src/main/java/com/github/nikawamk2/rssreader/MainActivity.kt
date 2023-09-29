@@ -10,8 +10,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.github.nikawamk2.rssreader.databinding.ActivityMainBinding
+import com.github.nikawamk2.rssreader.models.ArticleInfo
 import com.github.nikawamk2.rssreader.rss.Rss
 import com.google.android.material.tabs.TabLayout
+import java.time.LocalDateTime
+import java.time.ZoneId
 import java.util.UUID
 
 class MainActivity : AppCompatActivity() {
@@ -23,20 +26,19 @@ class MainActivity : AppCompatActivity() {
 
     object ExtendData {
         const val ArticleUrl = "Intent_ArticleUrl"
+        const val ArticleName = "Intent_ArticleName"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         super.onCreate(savedInstanceState)
 
-
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        tabLayout = findViewById(R.id.rssGroupListTab)
-
         setSupportActionBar(binding.toolbar)
 
+        tabLayout = findViewById(R.id.rssGroupListTab)
         tabLayout.also {
             val dm = DataManager(this)
             val groupList = dm.getRssFeedGroup()
@@ -50,9 +52,7 @@ class MainActivity : AppCompatActivity() {
         tabLayout.addOnTabSelectedListener(object: TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
                 val newArticleList = getCurrentArticle()
-                articleList.clear()
-                articleList.addAll(newArticleList)
-                adapter.notifyDataSetChanged()
+                replaceArticleList(newArticleList)
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab?) {
@@ -65,20 +65,22 @@ class MainActivity : AppCompatActivity() {
         })
 
         val list = findViewById<ListView>(R.id.article_list)
-        articleList = getCurrentArticle()
+        articleList = ArrayList()
         adapter = ArticleAdapter(
             this,
             articleList
         )
         list.adapter = adapter
+        replaceArticleList(getCurrentArticle())
         list.setOnItemClickListener { adapterView, view, position, id ->
             if (view == null) {
                 return@setOnItemClickListener
             }
 
             val articleUrl = view.findViewById<TextView>(R.id.article_url).text.toString()
+            val articleName = view.findViewById<TextView>(R.id.article_name).text.toString()
 
-            trasitionToWebView(articleUrl)
+            transitionToWebView(articleUrl, articleName)
         }
 
         val swipeRefreshLayout = findViewById<SwipeRefreshLayout>(R.id.article_refresh)
@@ -136,6 +138,11 @@ class MainActivity : AppCompatActivity() {
         return true
     }
 
+    /**
+     * 選択中のタブの現在の記事を取得
+     *
+     * @return 記事一覧
+     */
     private fun getCurrentArticle(): ArrayList<ArticleInfo> {
         val tab = tabLayout.getTabAt(tabLayout.selectedTabPosition) ?: return ArrayList<ArticleInfo>()
         val groupId = tab.tag.toString()
@@ -144,6 +151,9 @@ class MainActivity : AppCompatActivity() {
         return dm.getArticle(groupId)
     }
 
+    /**
+     * 選択中のタブの記事一覧を更新
+     */
     private fun refreshCurrentArticle() {
         val tab = tabLayout.getTabAt(tabLayout.selectedTabPosition) ?: return
         val groupId = tab.tag.toString()
@@ -157,32 +167,55 @@ class MainActivity : AppCompatActivity() {
             val rss = Rss(feed.feedUrl)
             val feedData = rss.getRssFeed() ?: throw Exception()
             feedData.items.forEachIndexed { index, element ->
+                var articleDate = LocalDateTime.MIN
+                if (element.pubDate != null) {
+                    articleDate = LocalDateTime.ofInstant(element.pubDate.toInstant(), ZoneId.systemDefault())
+                }
                 val article = ArticleInfo(
                     index.toLong(),
                     feed.feedId,
                     UUID.randomUUID().toString(),
                     element.link.toString(),
-                    element.title
+                    element.title,
+                    feed.feedName,
+                    articleDate
                 )
                 newArticleList.add(article)
             }
         }
 
-        articleList.clear()
-        articleList.addAll(newArticleList)
-        adapter.notifyDataSetChanged()
+        replaceArticleList(newArticleList)
 
         dm.refreshArticle(groupId, newArticleList)
     }
 
+    /**
+     * 記事一覧を最新のものに置換
+     *
+     * @args newArticleList 最新の記事一覧
+     */
+    private fun replaceArticleList(newArticleList: ArrayList<ArticleInfo>) {
+        val sortedArticleList = newArticleList.sortedByDescending { it.articleDate }
+        articleList.clear()
+        articleList.addAll(sortedArticleList)
+        adapter.notifyDataSetChanged()
+    }
+
+    /**
+     * 設定画面に遷移
+     */
     private fun transitionToSettings() {
         val intent = Intent(this, SettingsActivity::class.java)
         startActivity(intent)
     }
 
-    private fun trasitionToWebView(articleUrl: String) {
+    /**
+     * ブラウザに遷移
+     */
+    private fun transitionToWebView(articleUrl: String, articleName: String) {
         val intent = Intent(this, WebViewActivity::class.java)
         intent.putExtra(ExtendData.ArticleUrl, articleUrl)
+        intent.putExtra(ExtendData.ArticleName, articleName)
         startActivity(intent)
         overridePendingTransition(
             androidx.appcompat.R.anim.abc_grow_fade_in_from_bottom,

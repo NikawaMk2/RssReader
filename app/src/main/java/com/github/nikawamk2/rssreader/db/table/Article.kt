@@ -10,6 +10,7 @@ class Article {
         var Column_Id = "ID"
         var Column_Url = "URL"
         var Column_ArticleName = "ARTICLE_NAME"
+        var Column_ArticleDate = "ARTICLE_DATE"
 
         fun getCreateTableSql(): String {
             val sql = StringBuilder()
@@ -17,8 +18,9 @@ class Article {
             sql.append(" (")
             sql.append("    $Column_RssFeedId TEXT NOT NULL,")
             sql.append("    $Column_Id TEXT NOT NULL,")
-            sql.append("    $Column_Url NOT NULL,")
-            sql.append("    $Column_ArticleName NOT NULL,")
+            sql.append("    $Column_Url TEXT NOT NULL,")
+            sql.append("    $Column_ArticleName TEXT NOT NULL,")
+            sql.append("    $Column_ArticleDate TEXT,")
             sql.append("    PRIMARY KEY($Column_RssFeedId, $Column_Id),")
             sql.append("    FOREIGN KEY ($Column_RssFeedId)")
             sql.append("        REFERENCES ${RssFeed.TableName}(${RssFeed.Column_Id})")

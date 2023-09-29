@@ -37,6 +37,9 @@ class SettingsActivity : AppCompatActivity(),
         return true
     }
 
+    /**
+     * RSSフィードグループ一覧に遷移
+     */
     private fun transitionCategoryList() {
         val intent = Intent(this, RssFeedGroupListActivity::class.java)
         startActivity(intent)

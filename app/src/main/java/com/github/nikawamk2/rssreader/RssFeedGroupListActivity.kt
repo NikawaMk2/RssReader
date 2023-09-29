@@ -9,7 +9,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.fragment.app.FragmentManager
-import com.github.nikawamk2.rssreader.databinding.ActivityMainBinding
+import com.github.nikawamk2.rssreader.models.RssFeedGroupInfo
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.util.UUID
 
@@ -73,12 +73,23 @@ class RssFeedGroupListActivity : AppCompatActivity()  {
         return super.onOptionsItemSelected(item)
     }
 
+    /**
+     * グループ名を更新
+     *
+     * @args position 更新するグループ情報の位置
+     * @args newGroupName 新しいグループ名
+     */
     fun updateGroupName(position: Int, newGroupName: String) {
         val oldGroup = groupList[position]
         val newGroup = RssFeedGroupInfo(oldGroup.itemId, oldGroup.groupId, newGroupName)
         groupList[position] = newGroup
     }
 
+    /**
+     * グループの行を削除
+     *
+     * @args position 削除するグループ情報の位置
+     */
     fun deleteGroupRow(position: Int) {
         groupList.removeAt(position)
 
@@ -91,6 +102,11 @@ class RssFeedGroupListActivity : AppCompatActivity()  {
         adapter.notifyDataSetChanged();
     }
 
+    /**
+     * グループを追加
+     *
+     * @args groupName 追加するグループ名
+     */
     private fun addGroup(groupName: String): String {
         if (groupName == "") {
             return resources.getString(R.string.group_name_empty)

@@ -5,8 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
-import android.widget.ListView
 import android.widget.TextView
+import com.github.nikawamk2.rssreader.models.RssFeedGroupInfo
 
 class RssFeedGroupAdapter(private val context: Context, private val rssFeedGroupList: ArrayList<RssFeedGroupInfo>) : BaseAdapter() {
     private val inflater: LayoutInflater = LayoutInflater.from(context)

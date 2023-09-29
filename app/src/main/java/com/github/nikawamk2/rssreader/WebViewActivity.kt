@@ -17,6 +17,8 @@ class WebViewActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         val articleUrl = intent.getStringExtra(MainActivity.ExtendData.ArticleUrl).toString()
+        val articleName = intent.getStringExtra(MainActivity.ExtendData.ArticleName).toString()
+        title = articleName
         val webView = findViewById<WebView>(R.id.web_view)
         webView.loadUrl(articleUrl)
     }
