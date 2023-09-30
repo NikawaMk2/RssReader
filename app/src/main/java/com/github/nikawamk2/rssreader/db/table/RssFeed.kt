@@ -12,14 +12,14 @@ class RssFeed {
         var Column_FeedName = "FEED_NAME"
 
         fun getCreateTableSql(): String {
-            var sql = StringBuilder()
+            val sql = StringBuilder()
             sql.append(" CREATE TABLE $TableName")
             sql.append(" (")
             sql.append("    $Column_GroupId TEXT NOT NULL,")
             sql.append("    $Column_Id TEXT NOT NULL,")
             sql.append("    $Column_Url NOT NULL,")
             sql.append("    $Column_FeedName NOT NULL,")
-            sql.append("    PRIMARY KEY($Column_GroupId, $Column_Id),")
+            sql.append("    PRIMARY KEY($Column_Id),")
             sql.append("    FOREIGN KEY ($Column_GroupId)")
             sql.append("        REFERENCES ${RssFeedGroup.TableName}(${RssFeedGroup.Column_Id})")
             sql.append(" )")

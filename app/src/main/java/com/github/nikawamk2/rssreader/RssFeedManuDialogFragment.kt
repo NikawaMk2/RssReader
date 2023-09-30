@@ -14,7 +14,7 @@ class RssFeedManuDialogFragment (private val rssFeedList: RssFeedListActivity, p
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return activity?.let {
             val builder = AlertDialog.Builder(it)
-            builder.setItems(R.array.group_menu,
+            builder.setItems(R.array.rss_feed_menu,
                 DialogInterface.OnClickListener { _, which ->
                     when (which) {
                         PositionIndex.Delete -> showDeleteRssFeedDialog()

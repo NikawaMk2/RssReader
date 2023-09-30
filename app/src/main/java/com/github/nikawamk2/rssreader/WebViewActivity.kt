@@ -3,7 +3,9 @@ package com.github.nikawamk2.rssreader
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.MenuItem
+import android.webkit.WebResourceRequest
 import android.webkit.WebView
+import android.webkit.WebViewClient
 import androidx.appcompat.app.AppCompatActivity
 
 
@@ -19,7 +21,13 @@ class WebViewActivity : AppCompatActivity() {
         val articleUrl = intent.getStringExtra(MainActivity.ExtendData.ArticleUrl).toString()
         val articleName = intent.getStringExtra(MainActivity.ExtendData.ArticleName).toString()
         title = articleName
+
         val webView = findViewById<WebView>(R.id.web_view)
+        webView.webViewClient = object : WebViewClient() {
+            override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
+                return false
+            }
+        }
         webView.loadUrl(articleUrl)
     }
 

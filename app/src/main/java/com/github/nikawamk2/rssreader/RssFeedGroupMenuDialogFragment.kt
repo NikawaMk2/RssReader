@@ -49,20 +49,27 @@ class RssFeedGroupMenuDialogFragment (private val groupList: RssFeedGroupListAct
      */
     private fun showEditGroupNameDialog() {
         val groupName = AppCompatEditText(groupList)
-        AlertDialog.Builder(groupList)
-            .setTitle(R.string.edit_group)
+        val builder = AlertDialog.Builder(groupList)
+        val dialog = builder.setTitle(R.string.edit_group)
             .setMessage(R.string.input_new_group)
             .setView(groupName)
-            .setPositiveButton(R.string.update) { _, _ ->
-                var errMsg = updateGroupName(groupName.text.toString())
-                if (errMsg != "") {
-                    Toast.makeText(groupList, errMsg, Toast.LENGTH_SHORT).show()
-                }
+            .setPositiveButton(R.string.update) { dialog, _ ->
+                dialog.cancel()
             }
             .setNegativeButton(R.string.cancel) { _, _ ->
                 // 何もしない
             }
-            .show()
+            .create()
+        dialog.show()
+
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+            val errMsg = updateGroupName(groupName.text.toString())
+            if (errMsg != "") {
+                Toast.makeText(groupList, errMsg, Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            dialog.cancel()
+        }
     }
 
     /**
@@ -72,7 +79,7 @@ class RssFeedGroupMenuDialogFragment (private val groupList: RssFeedGroupListAct
         AlertDialog.Builder(groupList)
             .setMessage(R.string.delete_group_confirm)
             .setPositiveButton(R.string.delete) { _, _ ->
-                var errMsg = deleteGroup()
+                val errMsg = deleteGroup()
                 if (errMsg != "") {
                     Toast.makeText(groupList, errMsg, Toast.LENGTH_SHORT).show()
                 }
@@ -91,7 +98,7 @@ class RssFeedGroupMenuDialogFragment (private val groupList: RssFeedGroupListAct
      */
     private fun updateGroupName(groupName: String): String {
         if (groupName == "") {
-            return resources.getString(R.string.group_name_empty)
+            return groupList.resources.getString(R.string.group_name_empty)
         }
 
         try {

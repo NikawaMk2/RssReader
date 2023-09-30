@@ -10,10 +10,8 @@ import com.github.nikawamk2.rssreader.db.table.RssFeedGroup
 import com.github.nikawamk2.rssreader.models.ArticleInfo
 import com.github.nikawamk2.rssreader.models.RssFeedGroupInfo
 import com.github.nikawamk2.rssreader.models.RssFeedInfo
-import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import kotlin.text.StringBuilder
 
 class DataManager(context: Context) {
     private val dbHelper: RssReaderDBHelper = RssReaderDBHelper(context)
@@ -59,6 +57,13 @@ class DataManager(context: Context) {
      */
     fun deleteRssFeedGroup(groupId: String) {
         val db = dbHelper.writableDatabase
+
+        val rssFeedIdList = getRssFeedId(groupId)
+        val articleIdList = getArticleIdFromList(rssFeedIdList)
+
+        deleteArticlesFromList(articleIdList)
+
+        deleteRssFeedFromList(rssFeedIdList)
 
         val selection = "${RssFeedGroup.Column_Id} = ?"
         val selectionArgs = arrayOf(groupId)
@@ -128,6 +133,8 @@ class DataManager(context: Context) {
      * @args feedId RSSフィードID
      */
     fun deleteRssFeed(feedId: String) {
+        deleteArticles(feedId)
+
         val db = dbHelper.writableDatabase
 
         val selection = "${RssFeed.Column_Id} = ?"
@@ -196,11 +203,7 @@ class DataManager(context: Context) {
 
         val currentArticle = getArticle(groupId)
         if (currentArticle.isNotEmpty()) {
-            val bindList = ArrayList<String>()
-            for (i in 0 ..< currentArticle.count()) {
-                bindList.add("?")
-            }
-            val selection = "${Article.Column_Id} IN (${TextUtils.join(",", bindList)})"
+            val selection = getInClause(Article.Column_Id, currentArticle.count())
             val selectionArgs = currentArticle.map{ it.articleId }.toTypedArray()
             db.delete(Article.TableName, selection, selectionArgs)
         }
@@ -256,6 +259,179 @@ class DataManager(context: Context) {
             listIndex++
         }
         return articleList;
+    }
+
+    /**
+     * 記事を削除する
+     *
+     * @args articleIdList 記事ID一覧
+     */
+    private fun deleteArticlesFromList(articleIdList: ArrayList<String>) {
+        val db = dbHelper.writableDatabase
+
+        val selection = getInClause(Article.Column_Id, articleIdList.count())
+        val selectionArgs = articleIdList.toTypedArray()
+
+        db.delete(Article.TableName, selection, selectionArgs)
+    }
+
+    /**
+     * RSSフィードを削除する
+     *
+     * @args rssFeedIdList RSSフィードID一覧
+     */
+    private fun deleteRssFeedFromList(rssFeedIdList: ArrayList<String>) {
+        val db = dbHelper.writableDatabase
+
+        val selection = getInClause(RssFeed.Column_Id, rssFeedIdList.count())
+        val selectionArgs = rssFeedIdList.toTypedArray()
+
+        db.delete(RssFeed.TableName, selection, selectionArgs)
+    }
+
+    /**
+     * 指定のRSSフィードで取得した記事をすべて削除する
+     *
+     * @args feedId フィードID
+     */
+    private fun deleteArticles(feedId: String) {
+        val db = dbHelper.writableDatabase
+
+        val articleIdList = getArticleId(feedId)
+
+        val selection = getInClause(Article.Column_Id, articleIdList.count())
+        val selectionArgs = articleIdList.toTypedArray()
+
+        db.delete(Article.TableName, selection, selectionArgs)
+    }
+
+    /**
+     * フィードIDを取得
+     *
+     * @args feedId グループID
+     */
+    private fun getRssFeedId(groupId: String): ArrayList<String> {
+        val db = dbHelper.readableDatabase
+
+        val rssFeedIdList = ArrayList<String>()
+
+        val projection = arrayOf(RssFeed.Column_Id)
+
+        val selection = "${RssFeed.Column_GroupId} = ?"
+        val selectionArgs = arrayOf(groupId)
+
+        val cursor = db.query(
+            RssFeed.TableName,
+            projection,
+            selection,
+            selectionArgs,
+            null,
+            null,
+            null
+        )
+        if (cursor.count == 0) {
+            return rssFeedIdList;
+        }
+
+        var listIndex: Long = 0
+        cursor.moveToFirst()
+        while (!cursor.isAfterLast) {
+            rssFeedIdList.add(cursor.getString(0))
+            cursor.moveToNext()
+            listIndex++
+        }
+        return rssFeedIdList;
+    }
+
+    /**
+     * 記事IDを取得
+     *
+     * @args feedIdList フィードID一覧
+     */
+    private fun getArticleIdFromList(feedIdList: ArrayList<String>): ArrayList<String> {
+        val db = dbHelper.readableDatabase
+
+        val articleIdList = ArrayList<String>()
+
+        val projection = arrayOf(Article.Column_Id)
+
+        val selection = getInClause(Article.Column_RssFeedId, feedIdList.count())
+        val selectionArgs = feedIdList.toTypedArray()
+
+        val cursor = db.query(
+            Article.TableName,
+            projection,
+            selection,
+            selectionArgs,
+            null,
+            null,
+            null
+        )
+        if (cursor.count == 0) {
+            return articleIdList;
+        }
+
+        var listIndex: Long = 0
+        cursor.moveToFirst()
+        while (!cursor.isAfterLast) {
+            articleIdList.add(cursor.getString(0))
+            cursor.moveToNext()
+            listIndex++
+        }
+        return articleIdList;
+    }
+
+    /**
+     * 記事IDを取得
+     *
+     * @args feedId フィードID
+     */
+    private fun getArticleId(feedId: String): ArrayList<String> {
+        val db = dbHelper.readableDatabase
+
+        val articleIdList = ArrayList<String>()
+
+        val projection = arrayOf(Article.Column_Id)
+
+        val selection = "${Article.Column_RssFeedId} = ?"
+        val selectionArgs = arrayOf(feedId)
+
+        val cursor = db.query(
+            Article.TableName,
+            projection,
+            selection,
+            selectionArgs,
+            null,
+            null,
+            null
+        )
+        if (cursor.count == 0) {
+            return articleIdList;
+        }
+
+        var listIndex: Long = 0
+        cursor.moveToFirst()
+        while (!cursor.isAfterLast) {
+            articleIdList.add(cursor.getString(0))
+            cursor.moveToNext()
+            listIndex++
+        }
+        return articleIdList;
+    }
+
+    /**
+     * IN句を取得
+     *
+     * @args columnName 条件のカラム名
+     * @args numberOfValues 条件値の個数
+     * @return IN句(XXXX IN (?,?))
+     */
+    private fun getInClause(columnName: String, numberOfValues: Int): String {
+        val bindList = ArrayList<String>()
+        for (i in 0 ..< numberOfValues) {
+            bindList.add("?")
+        }
+        return "$columnName IN (${TextUtils.join(",", bindList)})"
     }
 
     /**

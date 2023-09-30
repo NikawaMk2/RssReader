@@ -122,6 +122,14 @@ class MainActivity : AppCompatActivity() {
                 it.addTab(tab)
             }
         }
+
+        val selectedTab = tabLayout.getTabAt(tabLayout.selectedTabPosition)
+        if (selectedTab == null) {
+            replaceArticleList(ArrayList())
+            return
+        }
+        val articleList = dm.getArticle(selectedTab.tag.toString())
+        replaceArticleList(articleList)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

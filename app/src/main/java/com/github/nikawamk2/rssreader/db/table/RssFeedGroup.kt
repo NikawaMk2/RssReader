@@ -10,11 +10,11 @@ class RssFeedGroup {
         var Column_GroupName = "GROUP_NAME"
 
         fun getCreateTableSql(): String {
-            var sql = StringBuilder()
+            val sql = StringBuilder()
             sql.append(" CREATE TABLE $TableName")
             sql.append(" (")
             sql.append("    $Column_Id TEXT NOT NULL PRIMARY KEY,")
-            sql.append("    $Column_GroupName NOT NULL")
+            sql.append("    $Column_GroupName TEXT NOT NULL")
             sql.append(" )")
 
             return sql.toString()

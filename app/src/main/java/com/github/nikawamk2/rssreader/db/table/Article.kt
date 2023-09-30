@@ -21,7 +21,7 @@ class Article {
             sql.append("    $Column_Url TEXT NOT NULL,")
             sql.append("    $Column_ArticleName TEXT NOT NULL,")
             sql.append("    $Column_ArticleDate TEXT,")
-            sql.append("    PRIMARY KEY($Column_RssFeedId, $Column_Id),")
+            sql.append("    PRIMARY KEY($Column_Id),")
             sql.append("    FOREIGN KEY ($Column_RssFeedId)")
             sql.append("        REFERENCES ${RssFeed.TableName}(${RssFeed.Column_Id})")
             sql.append(" )")

@@ -13,11 +13,21 @@ class RssReaderDBHelper(context: Context): SQLiteOpenHelper(context, DATABASE_NA
         db.execSQL(RssFeed.getCreateTableSql())
         db.execSQL(Article.getCreateTableSql())
     }
+
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
     }
+
     override fun onDowngrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
         onUpgrade(db, oldVersion, newVersion)
     }
+
+    override fun onOpen(db: SQLiteDatabase) {
+        super.onOpen(db);
+        if (!db.isReadOnly) {
+            db.execSQL("PRAGMA foreign_keys=ON;")
+        }
+    }
+
     companion object {
         const val DATABASE_VERSION = 1
         const val DATABASE_NAME = "RssReader.db"
