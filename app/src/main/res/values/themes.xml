@@ -1,0 +1,30 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.RssReader" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your light theme here. -->
+        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+    </style>
+
+    <style name="Theme.RssReader" parent="Base.Theme.RssReader">
+        <item name="android:actionOverflowButtonStyle">@style/AppToolbarOverflowButton</item>
+    </style>
+
+    <style name="Theme.WebView" parent="Base.Theme.RssReader">
+        <item name="android:homeAsUpIndicator">@drawable/baseline_home_24</item>
+    </style>
+
+    <style name="Widget.MaterialComponents.Toolbar.Primary">
+        <item name="android:background">@color/toolbar_back_ground_default</item>
+        <item name="titleTextColor">@color/toolbar_default</item>
+        <item name="subtitleTextColor">@color/toolbar_default</item>
+        <item name="navigationIconTint">@color/toolbar_default</item>
+    </style>
+
+    <style name="AppToolbarOverflowButton">
+        <item name="android:src">@drawable/abc_ic_menu_overflow_material</item>
+        <item name="android:tint">@color/toolbar_default</item>
+        <item name="android:background">?android:attr/selectableItemBackgroundBorderless</item>
+        <item name="android:paddingEnd">10dp</item>
+    </style>
+
+</resources>
