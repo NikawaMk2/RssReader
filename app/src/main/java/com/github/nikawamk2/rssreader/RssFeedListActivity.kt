@@ -56,20 +56,27 @@ class RssFeedListActivity : AppCompatActivity() {
 
         findViewById<FloatingActionButton>(R.id.rss_feed_fab).setOnClickListener { view ->
             val rssFeedUrl = AppCompatEditText(this)
-            AlertDialog.Builder(this)
-                .setTitle(R.string.add_rss)
+            val builder = AlertDialog.Builder(this)
+            val dialog = builder.setTitle(R.string.add_rss)
                 .setMessage(R.string.input_rss_feed_url)
                 .setView(rssFeedUrl)
-                .setPositiveButton(R.string.add) { _, _ ->
-                    val errMsg = addRssFeed(rssFeedUrl.text.toString())
-                    if (errMsg != "") {
-                        Toast.makeText(this, errMsg, Toast.LENGTH_SHORT).show()
-                    }
+                .setPositiveButton(R.string.add) { dialog, _ ->
+                    dialog.cancel()
                 }
                 .setNegativeButton(R.string.cancel) { _, _ ->
                     // 何もしない
                 }
-                .show()
+                .create()
+            dialog.show()
+
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+                val errMsg = addRssFeed(rssFeedUrl.text.toString())
+                if (errMsg != "") {
+                    Toast.makeText(this, errMsg, Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
+                dialog.cancel()
+            }
         }
     }
 
