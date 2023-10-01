@@ -25,7 +25,7 @@ class RssFeedManuDialogFragment (private val rssFeedList: RssFeedListActivity, p
     }
 
     /**
-     * RSSフィード一覧画面に遷移
+     * RSSフィード削除確認ダイアログを表示
      */
     private fun showDeleteRssFeedDialog() {
         AlertDialog.Builder(rssFeedList)
@@ -45,6 +45,7 @@ class RssFeedManuDialogFragment (private val rssFeedList: RssFeedListActivity, p
     /**
      * RSSフィードを削除
      *
+     * @return エラーメッセージ
      */
     private fun deleteRssFeed(): String {
         try {
