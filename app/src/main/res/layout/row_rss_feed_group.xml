@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rss_feed_group_row"
+    android:layout_width="match_parent"
+    android:layout_height="60sp"
+    android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/group_id"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:id="@+id/group_name"
+            android:layout_width="match_parent"
+            android:layout_height="40sp"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:scrollHorizontally="true"/>
+
+        <TextView
+            android:id="@+id/feed_count"
+            android:layout_width="match_parent"
+            android:layout_height="20sp"/>
+
+</LinearLayout>

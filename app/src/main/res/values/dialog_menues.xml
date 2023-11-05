@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array
+        name="group_menu">
+        <item>RSSフィードを編集</item>
+        <item>グループ名を編集</item>
+        <item>グループを削除</item>
+    </string-array>
+    <string-array
+        name="rss_feed_menu">
+        <item>RSSフィードを削除</item>
+    </string-array>
+</resources>

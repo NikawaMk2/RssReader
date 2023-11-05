@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string
+        name="add_group"
+        >グループ追加</string>
+    <string
+        name="edit_group"
+        >グループ名編集</string>
+    <string
+        name="add_rss"
+        >RSSを追加</string>
+    <string
+        name="error"
+        >エラー発生</string>
+</resources>

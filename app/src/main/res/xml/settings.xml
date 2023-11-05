@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+    <Preference
+        app:key="edit_rss_feed"
+        app:summary="RSSフィードの追加・編集・削除"
+        app:title="RSSフィードの編集"
+        app:fragment=""/>
+</PreferenceScreen>
