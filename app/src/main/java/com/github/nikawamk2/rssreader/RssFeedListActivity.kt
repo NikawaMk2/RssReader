@@ -10,6 +10,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.fragment.app.FragmentManager
+import com.github.nikawamk2.rssreader.common.Util
 import com.github.nikawamk2.rssreader.models.RssFeedInfo
 import com.github.nikawamk2.rssreader.rss.Rss
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -129,6 +130,7 @@ class RssFeedListActivity : AppCompatActivity() {
         } catch (e: RSSReaderException) {
             return resources.getString(R.string.rss_feed_url_not_correct)
         } catch (e: Exception) {
+            Util.showErrorDialog(this, e)
             return e.toString()
         }
 

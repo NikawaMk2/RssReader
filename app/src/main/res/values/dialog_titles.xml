@@ -9,4 +9,7 @@
     <string
         name="add_rss"
         >RSSを追加</string>
+    <string
+        name="error"
+        >エラー発生</string>
 </resources>

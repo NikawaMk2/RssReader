@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
+import com.github.nikawamk2.rssreader.common.Util
 
 class RssFeedManuDialogFragment (private val rssFeedList: RssFeedListActivity, private val feedId: String, private val position: Int) : DialogFragment() {
     object PositionIndex {
@@ -53,6 +54,7 @@ class RssFeedManuDialogFragment (private val rssFeedList: RssFeedListActivity, p
             dm.deleteRssFeed(feedId)
             rssFeedList.deleteRssFeedRow(position)
         } catch (e: Exception) {
+            Util.showErrorDialog(rssFeedList, e)
             return e.toString()
         }
 

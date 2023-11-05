@@ -19,3 +19,18 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+-dontwarn org.ietf.jgss.GSSContext
+-dontwarn org.ietf.jgss.GSSCredential
+-dontwarn org.ietf.jgss.GSSException
+-dontwarn org.ietf.jgss.GSSManager
+-dontwarn org.ietf.jgss.GSSName
+-dontwarn org.ietf.jgss.Oid
+-dontwarn javax.servlet.ServletContextListener
+-dontwarn org.apache.avalon.framework.logger.Logger
+-dontwarn org.apache.log.Hierarchy
+-dontwarn org.apache.log.Logger
+-dontwarn org.apache.log4j.Category
+-dontwarn org.apache.log4j.Logger
+-dontwarn org.apache.log4j.Priority
+
+-keep class org.apache.commons.logging.**
