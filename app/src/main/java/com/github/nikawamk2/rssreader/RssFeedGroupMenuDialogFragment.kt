@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.fragment.app.DialogFragment
+import com.github.nikawamk2.rssreader.common.Util
 
 class RssFeedGroupMenuDialogFragment (private val groupList: RssFeedGroupListActivity, private val groupId: String, private val position: Int) : DialogFragment() {
     object PositionIndex {
@@ -106,6 +107,7 @@ class RssFeedGroupMenuDialogFragment (private val groupList: RssFeedGroupListAct
             dm.updateRssFeedGroupName(groupId, groupName)
             groupList.updateGroupName(position, groupName)
         } catch (e: Exception) {
+            Util.showErrorDialog(groupList, e)
             return e.toString()
         }
 
@@ -123,6 +125,7 @@ class RssFeedGroupMenuDialogFragment (private val groupList: RssFeedGroupListAct
             dm.deleteRssFeedGroup(groupId)
             groupList.deleteGroupRow(position)
         } catch (e: Exception) {
+            Util.showErrorDialog(groupList, e)
             return e.toString()
         }
 

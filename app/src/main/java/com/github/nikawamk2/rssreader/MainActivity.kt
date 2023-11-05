@@ -9,6 +9,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.github.nikawamk2.rssreader.common.Util
 import com.github.nikawamk2.rssreader.databinding.ActivityMainBinding
 import com.github.nikawamk2.rssreader.models.ArticleInfo
 import com.github.nikawamk2.rssreader.rss.Rss
@@ -163,38 +164,42 @@ class MainActivity : AppCompatActivity() {
      * 選択中のタブの記事一覧を更新
      */
     private fun refreshCurrentArticle() {
-        val tab = tabLayout.getTabAt(tabLayout.selectedTabPosition) ?: return
-        val groupId = tab.tag.toString()
+        try {
+            val tab = tabLayout.getTabAt(tabLayout.selectedTabPosition) ?: return
+            val groupId = tab.tag.toString()
 
-        val dm = DataManager(this)
-        val feedList = dm.getRssFeed(groupId)
+            val dm = DataManager(this)
+            val feedList = dm.getRssFeed(groupId)
 
-        val newArticleList = ArrayList<ArticleInfo>()
-        for (i in 0..<feedList.count()) {
-            val feed = feedList[i]
-            val rss = Rss(feed.feedUrl)
-            val feedData = rss.getRssFeed() ?: throw Exception()
-            feedData.items.forEachIndexed { index, element ->
-                var articleDate = LocalDateTime.MIN
-                if (element.pubDate != null) {
-                    articleDate = LocalDateTime.ofInstant(element.pubDate.toInstant(), ZoneId.systemDefault())
+            val newArticleList = ArrayList<ArticleInfo>()
+            for (i in 0..<feedList.count()) {
+                val feed = feedList[i]
+                val rss = Rss(feed.feedUrl)
+                val feedData = rss.getRssFeed() ?: throw Exception()
+                feedData.items.forEachIndexed { index, element ->
+                    var articleDate = LocalDateTime.MIN
+                    if (element.pubDate != null) {
+                        articleDate = LocalDateTime.ofInstant(element.pubDate.toInstant(), ZoneId.systemDefault())
+                    }
+                    val article = ArticleInfo(
+                        index.toLong(),
+                        feed.feedId,
+                        UUID.randomUUID().toString(),
+                        element.link.toString(),
+                        element.title,
+                        feed.feedName,
+                        articleDate
+                    )
+                    newArticleList.add(article)
                 }
-                val article = ArticleInfo(
-                    index.toLong(),
-                    feed.feedId,
-                    UUID.randomUUID().toString(),
-                    element.link.toString(),
-                    element.title,
-                    feed.feedName,
-                    articleDate
-                )
-                newArticleList.add(article)
             }
+
+            replaceArticleList(newArticleList)
+
+            dm.refreshArticle(groupId, newArticleList)
+        } catch (e: Exception) {
+            Util.showErrorDialog(this, e)
         }
-
-        replaceArticleList(newArticleList)
-
-        dm.refreshArticle(groupId, newArticleList)
     }
 
     /**

@@ -12,4 +12,10 @@
     <string
         name="cancel"
         >キャンセル</string>
+    <string
+        name="copy_to_clip"
+        >コピー</string>
+    <string
+        name="close"
+        >閉じる</string>
 </resources>
